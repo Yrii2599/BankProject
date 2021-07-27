@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace BankProject.Models
 {
@@ -10,7 +8,7 @@ namespace BankProject.Models
         public string Account { get; set; }
         public int Balance { get; set; }
         public string Type { get; set; }
-        public virtual  List<Card> Cards { get; set; }
+        public virtual  List<BaseCard> Cards { get; set; }
         public User User { get; set; }
     }
 }

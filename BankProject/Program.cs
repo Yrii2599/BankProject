@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography;
-using BankProject.Helpers;
-using BankProject.Models;
+﻿using BankProject.Abstraction;
+using BankProject.States;
 
 namespace BankProject
 {
@@ -10,9 +7,9 @@ namespace BankProject
     {
         static void Main(string[] args)
         {
-           
-            AutorizeInteface autorize = new AutorizeInteface();
-            autorize.UserInterface();
+
+            StateContext context = new StateContext(new AutorizeMenu());
+            context.GetMenu();
 
         }
     }

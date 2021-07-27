@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BankProject.Models;
+﻿using BankProject.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankProject.Helpers
@@ -10,7 +7,7 @@ namespace BankProject.Helpers
     {
         public DbSet<User> Users { get; set; }
         public DbSet<BaseAccount> BankAccounts { get; set; } 
-        public DbSet<Card> Cards { get; set; }
+        public DbSet<BaseCard> Cards { get; set; }
         public DbSet<PersonalInfo> PersonalInfos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -29,7 +26,7 @@ namespace BankProject.Helpers
                 .WithOne(e => e.User)
                 .IsRequired();
 
-            modelBuilder.Entity<BankAccount>()
+            modelBuilder.Entity<BaseAccount>()
                 .HasMany(c => c.Cards)
                 .WithOne(e => e.BankAccount)
                 .IsRequired();

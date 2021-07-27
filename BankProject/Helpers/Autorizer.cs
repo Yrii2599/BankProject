@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BankProject.Helpers;
 using BankProject.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankProject
 {
-    class Autorize
+    class Autorizer
     {
 
         public static User CreateAccount(string login, string password)
@@ -33,7 +31,6 @@ namespace BankProject
         public static User TryGetUser(string login, string password)
         {
             using var context = new BankProject.Helpers.BankDbContext();
-            var result = context.Users.ToList();
             return context.Users.Include(u=>u.BankAccounts)
                 .ThenInclude(u=>u.Cards)
                 .Include(u=>u.PersonalInfo)

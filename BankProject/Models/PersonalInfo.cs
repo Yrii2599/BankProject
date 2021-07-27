@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BankProject.Models
+﻿namespace BankProject.Models
 {
     class PersonalInfo
     {

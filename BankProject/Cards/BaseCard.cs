@@ -1,28 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using BankProject.Helpers;
 using BankProject.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankProject
 {
-    class CardNumber : Card
+    class BaseCard : Card
     {
-        public CardNumber(BaseAccount account)
+        public int Balance()
         {
-            Balance = account.Balance;
+            return BankAccount.Balance;
+        }
+
+        public BaseCard()
+        {
             CardNumber = GenerateCardNumber();
             Pin = GeneratePinForCard();
         }
 
-        static Random _random = new Random();
-
-        public static string GenerateCardNumber()
+        public void CardToCard(BaseCard card, int count)
         {
+            this.BankAccount.SendMoney(card.BankAccount.Account,count);
+        }
 
+        public static BaseCard GetCardByNumber(string cardNumber)
+        {
+            using var context = new BankDbContext();
+            return context.Cards.FirstOrDefault(u => u.CardNumber == cardNumber);
+        }
+
+        public static bool IsUserOwner(User user, string cardNumber)
+        {
+            return GetCardByNumber(cardNumber)?.BankAccount.User.Id == user.Id;
+        }
+
+        private string GenerateCardNumber()
+        {
+            Random _random = new Random();
             int[] numbers = new int[16];
             string cardNumber = "";
             double number = 0;
@@ -51,18 +66,22 @@ namespace BankProject
 
             if (number % 10 != 0)
             {
-                number1 = (int) (number) % 10;
-                numbers[^1] = 10 - (int) number1;
+                number1 = (int)(number) % 10;
+                numbers[^1] = 10 - (int)number1;
             }
 
             cardNumber += numbers[^1];
-            Console.WriteLine(cardNumber);
+            if (!IsCardValid(cardNumber))
+            {
+                return GenerateCardNumber();
+            }
             return cardNumber;
 
         }
 
-        public static string GeneratePinForCard()
+        private string GeneratePinForCard()
         {
+            Random _random = new Random();
             int[] numbers = new int[4];
             string pin = "";
             for (int i = 0; i < numbers.Length; i++)
@@ -112,28 +131,32 @@ namespace BankProject
             }
         }
 
-        public static void AddToDB(int id)
+        public static void AddToDB(User user, string account)
         {
-            Console.WriteLine("Enter the bank account for which you want to create a card.");
-            var account = Console.ReadLine();
+
 
             using var context = new BankDbContext();
             var res = context.BankAccounts.Include(u => u.Cards)
-                .FirstOrDefault(u => u.Id == id && u.Account == account);
+                .FirstOrDefault(u => u.User.Id == user.Id && u.Account == account);
             if (res != null)
             {
-                if (res.Cards.Any(u => u.Balance > 0))
+                if (res.Cards.Any())
                 {
                     Console.WriteLine($"Card for this account Has already exist");
                 }
                 else
                 {
-                    var a = new CardNumber(res);
-                    if (IsCardValid(a.CardNumber))
+                    var a = new BaseCard
                     {
-                        res.Cards.Add(a);
-                        context.SaveChanges();
-                    }
+                        BankAccount = res
+                    };
+
+                    res.Cards.Add(a);
+                    context.SaveChanges();
+                    Console.WriteLine($"\nCard successfully add");
+                    Console.WriteLine($"card number {a.CardNumber}");
+                    Console.WriteLine($"card pin {a.Pin}\n");
+
                 }
 
 

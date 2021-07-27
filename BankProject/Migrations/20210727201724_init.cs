@@ -2,7 +2,7 @@
 
 namespace BankProject.Migrations
 {
-    public partial class CreateDB1 : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -21,7 +21,7 @@ namespace BankProject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BankAccount",
+                name: "BankAccounts",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -29,14 +29,13 @@ namespace BankProject.Migrations
                     Account = table.Column<string>(nullable: true),
                     Balance = table.Column<int>(nullable: false),
                     Type = table.Column<string>(nullable: true),
-                    Discriminator = table.Column<string>(nullable: false),
-                    UserId = table.Column<int>(nullable: true)
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BankAccount", x => x.Id);
+                    table.PrimaryKey("PK_BankAccounts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BankAccount_Users_UserId",
+                        name: "FK_BankAccounts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -72,24 +71,23 @@ namespace BankProject.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CardNumber = table.Column<string>(nullable: true),
-                    Pin = table.Column<int>(nullable: false),
-                    Balance = table.Column<int>(nullable: false),
+                    Pin = table.Column<string>(nullable: true),
                     BankAccountId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cards", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Cards_BankAccount_BankAccountId",
+                        name: "FK_Cards_BankAccounts_BankAccountId",
                         column: x => x.BankAccountId,
-                        principalTable: "BankAccount",
+                        principalTable: "BankAccounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BankAccount_UserId",
-                table: "BankAccount",
+                name: "IX_BankAccounts_UserId",
+                table: "BankAccounts",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -113,7 +111,7 @@ namespace BankProject.Migrations
                 name: "PersonalInfos");
 
             migrationBuilder.DropTable(
-                name: "BankAccount");
+                name: "BankAccounts");
 
             migrationBuilder.DropTable(
                 name: "Users");

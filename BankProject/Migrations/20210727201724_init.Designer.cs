@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankProject.Migrations
 {
     [DbContext(typeof(BankDbContext))]
-    [Migration("20210726234508_CreateDB1")]
-    partial class CreateDB1
+    [Migration("20210727201724_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace BankProject.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BankProject.Models.BankAccount", b =>
+            modelBuilder.Entity("BankProject.BaseAccount", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,29 +33,25 @@ namespace BankProject.Migrations
                     b.Property<int>("Balance")
                         .HasColumnType("int");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.ToTable("BankAccount");
+                    b.HasIndex("UserId");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BankAccount");
+                    b.ToTable("BankAccounts");
                 });
 
-            modelBuilder.Entity("BankProject.Models.Card", b =>
+            modelBuilder.Entity("BankProject.BaseCard", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Balance")
-                        .HasColumnType("int");
 
                     b.Property<int>("BankAccountId")
                         .HasColumnType("int");
@@ -63,8 +59,8 @@ namespace BankProject.Migrations
                     b.Property<string>("CardNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Pin")
-                        .HasColumnType("int");
+                    b.Property<string>("Pin")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -120,19 +116,16 @@ namespace BankProject.Migrations
 
             modelBuilder.Entity("BankProject.BaseAccount", b =>
                 {
-                    b.HasBaseType("BankProject.Models.BankAccount");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("UserId");
-
-                    b.HasDiscriminator().HasValue("BaseAccount");
+                    b.HasOne("BankProject.Models.User", "User")
+                        .WithMany("BankAccounts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("BankProject.Models.Card", b =>
+            modelBuilder.Entity("BankProject.BaseCard", b =>
                 {
-                    b.HasOne("BankProject.Models.BankAccount", "BankAccount")
+                    b.HasOne("BankProject.BaseAccount", "BankAccount")
                         .WithMany("Cards")
                         .HasForeignKey("BankAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -144,15 +137,6 @@ namespace BankProject.Migrations
                     b.HasOne("BankProject.Models.User", "User")
                         .WithOne("PersonalInfo")
                         .HasForeignKey("BankProject.Models.PersonalInfo", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BankProject.BaseAccount", b =>
-                {
-                    b.HasOne("BankProject.Models.User", "User")
-                        .WithMany("BankAccounts")
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
