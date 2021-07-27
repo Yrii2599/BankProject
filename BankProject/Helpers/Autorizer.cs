@@ -8,7 +8,12 @@ namespace BankProject
 {
     class Autorizer
     {
-
+        /// <summary>
+        /// Create a new user account
+        /// </summary>
+        /// <param name="login">login for creating account</param>
+        /// <param name="password">password for creating account</param>
+        /// <returns>created user</returns>
         public static User CreateAccount(string login, string password)
         {
 
@@ -27,7 +32,12 @@ namespace BankProject
             context.SaveChanges();
             return user;
         }
-
+        /// <summary>
+        /// searches the database for a user with the specified input parameters
+        /// </summary>
+        /// <param name="login">login for searching</param>
+        /// <param name="password">password for searching</param>
+        /// <returns>the user if there is one</returns>
         public static User TryGetUser(string login, string password)
         {
             using var context = new BankProject.Helpers.BankDbContext();

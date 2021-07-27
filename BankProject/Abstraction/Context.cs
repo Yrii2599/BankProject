@@ -12,7 +12,10 @@ namespace BankProject.Abstraction
         {
             this.TransitionTo(state);
         }
-
+        /// <summary>
+        /// Transition to state from the parameters
+        /// </summary>
+        /// <param name="state"> new state</param>
         public void TransitionTo(State state)
         {
              this._state = state;
@@ -20,7 +23,9 @@ namespace BankProject.Abstraction
             Console.Clear();
             this._state.ShowMenu();
         }
-
+        /// <summary>
+        /// Show current menu
+        /// </summary>
         public void GetMenu()
         {
             this._state.ShowMenu();

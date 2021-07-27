@@ -18,18 +18,31 @@ namespace BankProject
             CardNumber = GenerateCardNumber();
             Pin = GeneratePinForCard();
         }
-
+        /// <summary>
+        /// Money transfer from one card to another
+        /// </summary>
+        /// <param name="card">Bank account</param>
+        /// <param name="count">Transfer volume</param>
         public void CardToCard(BaseCard card, int count)
         {
             this.BankAccount.SendMoney(card.BankAccount.Account,count);
         }
-
+        /// <summary>
+        /// Retrieving a custom map from a database
+        /// </summary>
+        /// <param name="cardNumber">the card number is transmitted to search for a card in the database</param>
+        /// <returns>the map found in the database</returns>
         public static BaseCard GetCardByNumber(string cardNumber)
         {
             using var context = new BankDbContext();
             return context.Cards.FirstOrDefault(u => u.CardNumber == cardNumber);
         }
-
+        /// <summary>
+        /// Checks if the user is the owner of the card
+        /// </summary>
+        /// <param name="user">The user of which is checked whether the card number contains</param>
+        /// <param name="cardNumber">number of the card checked for belonging to the user</param>
+        /// <returns>true if the user owns the card number</returns>
         public static bool IsUserOwner(User user, string cardNumber)
         {
             return GetCardByNumber(cardNumber)?.BankAccount.User.Id == user.Id;
@@ -94,7 +107,11 @@ namespace BankProject
             return pin;
         }
 
-
+        /// <summary>
+        /// checks the correctness of the card insertion
+        /// </summary>
+        /// <param name="cardNumber">the card that is being checked</param>
+        /// <returns>true if the map is correct</returns>
         public static bool IsCardValid(string cardNumber)
         {
 
@@ -130,11 +147,13 @@ namespace BankProject
                 return false;
             }
         }
-
+        /// <summary>
+        /// create a card in the database for a specific user with a link to a bank account
+        /// </summary>
+        /// <param name="user">user who owns the account</param>
+        /// <param name="account">account that is verified for affiliation</param>
         public static void AddToDB(User user, string account)
         {
-
-
             using var context = new BankDbContext();
             var res = context.BankAccounts.Include(u => u.Cards)
                 .FirstOrDefault(u => u.User.Id == user.Id && u.Account == account);

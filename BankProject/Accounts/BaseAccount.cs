@@ -22,7 +22,10 @@ namespace BankProject
 
             Account = bankNumber;
         }
-
+        /// <summary>
+        /// Add new bank account to data base
+        /// </summary>
+        /// <param name="id">User Id who wants to open a bank account</param>
         public void AddToDB(int id)
         {
             using var context = new BankDbContext();
@@ -34,24 +37,25 @@ namespace BankProject
                 context.SaveChanges();
             }
         }
-
+        /// <summary>
+        /// Sending money from one bank account to another
+        /// </summary>
+        /// <param name="account">Bank account to which money is to be credited</param>
+        /// <param name="count">transaction volume</param>
         public void SendMoney(string account, int count)
         {
             if (this.Balance > count)
             {
-                using (var context = new BankDbContext())
+                using var context = new BankDbContext();
+                var a = context.BankAccounts.ToList();
+                var res = context.BankAccounts.FirstOrDefault(u => u.Account == account);
+                if (res != null)
                 {
-                    var a = context.BankAccounts.ToList();
-                    var res = context.BankAccounts.FirstOrDefault(u => u.Account == account);
-                    if (res != null)
-                    {
-                        this.Balance -= count;
-                        res.Balance += count;
-                        Console.WriteLine($"Operation success");
-                        context.SaveChanges();
-                    }
+                    this.Balance -= count;
+                    res.Balance += count;
+                    Console.WriteLine($"Operation success");
+                    context.SaveChanges();
                 }
-
             }
             else
             {
