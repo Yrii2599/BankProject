@@ -44,15 +44,17 @@ namespace BankProject
         /// <param name="count">transaction volume</param>
         public void SendMoney(string account, int count)
         {
-            if (this.Balance > count)
+            if (Balance > count)
             {
                 using var context = new BankDbContext();
-                var a = context.BankAccounts.ToList();
-                var res = context.BankAccounts.FirstOrDefault(u => u.Account == account);
-                if (res != null)
+                var accountTo = context.BankAccounts
+                    .FirstOrDefault(u => u.Account == account);
+                var accountFrom = context.BankAccounts
+                    .FirstOrDefault(u => u.Account == this.Account);
+                if (accountTo != null&& accountFrom!=null)
                 {
-                    this.Balance -= count;
-                    res.Balance += count;
+                    accountFrom.Balance -= count;
+                    accountTo.Balance += count;
                     Console.WriteLine($"Operation success");
                     context.SaveChanges();
                 }

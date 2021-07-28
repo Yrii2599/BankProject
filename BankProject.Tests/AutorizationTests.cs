@@ -14,17 +14,17 @@ namespace BankProject.Tests
         public void IsUserCreated()
         {
             var controller = Autorizer.CreateAccount("Bob", "Bob25");
+          
             var std = Autorizer.TryGetUser(controller.Login,controller.Password);
 
-                Assert.Equal("Bob", std.Login);
-                Assert.Equal("Bob25", std.Password);
-                Assert.Equal(std.GetType(), controller.GetType());
-
-
+            Assert.Equal("Bob", std.Login); 
+            Assert.Equal("Bob25", std.Password); 
+            Assert.Equal(std.GetType(), controller.GetType());
+            
         }
 
         [Fact]
-        public void TryGetUserFromDB()
+        public void TryGetUserFromDb()
         {
             var controller = Autorizer.TryGetUser("Bob", "Bob25");
 

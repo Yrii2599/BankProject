@@ -3,6 +3,7 @@ using System.Linq;
 using BankProject.Helpers;
 using BankProject.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BankProject
 {
@@ -25,7 +26,9 @@ namespace BankProject
         /// <param name="count">Transfer volume</param>
         public void CardToCard(BaseCard card, int count)
         {
+            //using var context = new BankDbContext();
             this.BankAccount.SendMoney(card.BankAccount.Account,count);
+            
         }
         /// <summary>
         /// Retrieving a custom map from a database
@@ -35,7 +38,11 @@ namespace BankProject
         public static BaseCard GetCardByNumber(string cardNumber)
         {
             using var context = new BankDbContext();
-            return context.Cards.FirstOrDefault(u => u.CardNumber == cardNumber);
+            var res=context.Cards.Include(u=>u.BankAccount)
+                .ThenInclude(u=>u.User)
+                .FirstOrDefault(u => u.CardNumber == cardNumber);
+            context.SaveChanges();
+            return res;
         }
         /// <summary>
         /// Checks if the user is the owner of the card
@@ -92,7 +99,7 @@ namespace BankProject
 
         }
 
-        private string GeneratePinForCard()
+        public static string GeneratePinForCard()
         {
             Random _random = new Random();
             int[] numbers = new int[4];
