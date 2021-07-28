@@ -30,48 +30,116 @@ namespace BankProject.Tests
 
         }
 
-        [Fact]
-        public void TransferringMoneyFromOneCardToAnother()
+        [Theory]
+        [InlineData("Allaa", "1",150,500)]
+        [InlineData("Vasia", "123",300,1000)]
+        [InlineData("Zhenia", "2536",256,400)]
+        public void TransferringMoneyFromOneCardToAnother(string name, string password, int count, int balance)
         {
-       
-            BaseCard fromCardNumber = new BaseCard(){ BankAccount = { Account = "61327227081409325202339", Balance = 4500 },CardNumber = "8009632340604747", Pin = "7585" };
-            var toCardNumber = new BaseCard {CardNumber = "5618695424030153", Pin = "0296" ,BankAccount ={Account = "34947183087748526930771", Balance = 51065} };
-          
-            int count = 5;
-            using var context = new BankDbContext();
-            fromCardNumber.CardToCard(toCardNumber, count);
+            var user = new User(){BankAccounts = new List<BaseAccount>(), Login = name, Password = password};
+            var card=new BaseCard();
+            var card1=new BaseCard();
+            BaseAccount accountFrom = new BaseAccount();
+            BaseAccount accountTo = new BaseAccount();
+            accountFrom.Balance = balance;
+            accountFrom.Cards = new List<BaseCard>();
+            accountFrom.User = user;
+            accountTo.Balance = balance;
+            accountTo.Cards = new List<BaseCard>();
+            accountTo.User = user;
+            card.BankAccount = accountFrom;
+            card1.BankAccount = accountTo;
+            user.BankAccounts.Add(accountFrom);
+            user.BankAccounts.Add(accountTo);
+            accountFrom.Cards.Add(card);
+            accountTo.Cards.Add(card1);
 
-            Assert.Equal(expected: fromCardNumber.Balance() - 5, actual: fromCardNumber.Balance());
-            Assert.Equal(expected: toCardNumber.Balance() + 5, actual: toCardNumber.Balance());
+            using (var context = new BankDbContext())
+            {
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+
+            BaseCard fromCardNumber;
+            BaseCard toCardNumber;
+            using (var context = new BankDbContext())
+            {
+                fromCardNumber = context.Cards.Include(u=>u.BankAccount).FirstOrDefault(u=>u.CardNumber==card.CardNumber);
+                toCardNumber = context.Cards.Include(u => u.BankAccount).FirstOrDefault(u=>u.CardNumber == card1.CardNumber);
+            }
+
+            if (fromCardNumber != null&& toCardNumber != null)
+            {
+                fromCardNumber.CardToCard(toCardNumber, count);
+
+                
+            }
+            using (var context = new BankDbContext())
+            {
+                fromCardNumber = context.Cards.Include(u => u.BankAccount).FirstOrDefault(u => u.CardNumber == card.CardNumber);
+                toCardNumber = context.Cards.Include(u => u.BankAccount).FirstOrDefault(u => u.CardNumber == card1.CardNumber);
+            }
+
+            if (fromCardNumber != null && toCardNumber != null)
+            {
+                Assert.Equal(expected: balance- count, actual: fromCardNumber.Balance());
+                Assert.Equal(expected: balance + count, actual: toCardNumber.Balance());
+            }
+
+            using (var context = new BankDbContext())
+            {
+                context.Remove(user);
+                context.SaveChanges();
+            }
+
+
 
         }
-
-        [Fact]
-        public void IsGetUserFromDb()
-        {
-            var card = new BaseCard() { CardNumber = "8009632340604747", Pin = "7585", BankAccount = new BaseAccount() { Account = "61327227081409325202339", Balance = 5000 } };
-           
-          var res=  BaseCard.GetCardByNumber(cardNumber: card.CardNumber);
-            
-            Assert.Equal(expected: card.CardNumber,actual: res.CardNumber);
-            Assert.Equal(expected: card.Pin,actual: res.Pin);
-
-        }
-        [Fact]
-        public void IsUserOwner()
+        [Theory]
+        [InlineData("Allaa","1")]
+        [InlineData("Vasia","123")]
+        [InlineData("Zhenia","2536")]
+        public void IsUserOwner(string name, string password)
         {
             List<BaseAccount> listBankAccounts= new List<BaseAccount>();
             List<BaseCard> listCards= new List<BaseCard>();
-            
-            BaseAccount account = new BaseAccount() {Account = "61327227081409325202339", Balance = 5000};
+            var user= new User();
+            BaseAccount account = new BaseAccount() {Cards = listCards, User =user };
             listBankAccounts.Add(item: account);
-            var card = new BaseCard() { CardNumber = "8009632340604747", Pin = "7585", BankAccount = account };
+            var card = new BaseCard() { BankAccount = account};
             listCards.Add(item: card);
-            User user = new User() {BankAccounts = listBankAccounts,Login = "as", Password = "1"};
+            user.BankAccounts = listBankAccounts;
+            user.Login = name;
+            user.Password = password;
 
-           var res= BaseCard.IsUserOwner(user: user, cardNumber: card.CardNumber);
-         
-           Assert.Equal(expected: true, actual: res );
+            using (var context = new BankDbContext())
+            {
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+
+            User userFromDb;
+            using (var context = new BankDbContext())
+            {
+                userFromDb = context.Users.Include(u=>u.BankAccounts)
+                    .ThenInclude(u=>u.Cards)
+                    .FirstOrDefault(u => u.Login == name);
+            }
+            var res = BaseCard.IsUserOwner(user: userFromDb, cardNumber: card.CardNumber);
+            Assert.True( res );
+            Assert.NotNull(userFromDb);
+            Assert.NotNull(userFromDb.BankAccounts);
+            Assert.True(userFromDb.BankAccounts.Any(u=>u.Account==account.Account));
+            var baseAccount = userFromDb.BankAccounts.FirstOrDefault(u => u.Account == account.Account);
+            Assert.NotNull(baseAccount);
+            Assert.NotNull(baseAccount.Cards);
+            Assert.NotEmpty(baseAccount.Cards);
+            Assert.True(baseAccount.Cards.Any(u=>u.CardNumber==card.CardNumber));
+            using (var context = new BankDbContext())
+            {
+                context.Users.Remove(userFromDb);
+                context.SaveChanges();
+            }
 
 
 

@@ -26,7 +26,7 @@ namespace BankProject
         /// <param name="count">Transfer volume</param>
         public void CardToCard(BaseCard card, int count)
         {
-            //using var context = new BankDbContext();
+           
             this.BankAccount.SendMoney(card.BankAccount.Account,count);
             
         }
