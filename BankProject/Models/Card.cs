@@ -1,6 +1,6 @@
 ﻿namespace BankProject.Models
 {
-    class Card
+  public  class Card
     {
         public int Id { get; set; }
         

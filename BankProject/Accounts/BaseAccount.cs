@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BankProject
 {
-    class BaseAccount : BankAccount
+  public  class BaseAccount : BankAccount
     {
         public BaseAccount()
         {

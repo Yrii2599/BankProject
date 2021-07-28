@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BankProject
 {
-    class Autorizer
+   public class Autorizer
     {
         /// <summary>
         /// Create a new user account

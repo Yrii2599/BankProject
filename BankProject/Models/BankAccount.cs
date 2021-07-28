@@ -2,7 +2,7 @@
 
 namespace BankProject.Models
 {
-  class BankAccount
+ public class BankAccount
     {
         public int Id { get; set; }
         public string Account { get; set; }

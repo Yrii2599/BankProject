@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BankProject
 {
-    class BaseCard : Card
+   public class BaseCard : Card
     {
         public int Balance()
         {

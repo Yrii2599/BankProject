@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BankProject.Helpers
 {
-  class BankDbContext: DbContext
+    public class BankDbContext: DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<BaseAccount> BankAccounts { get; set; } 
