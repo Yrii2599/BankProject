@@ -53,6 +53,7 @@ namespace BankProject.States
                     else
                     {
                         Console.WriteLine("Password must be more then 6 symbols ");
+                        ShowMenu();
                     }
 
                     break;

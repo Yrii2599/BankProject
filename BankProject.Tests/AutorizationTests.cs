@@ -20,17 +20,24 @@ namespace BankProject.Tests
             Assert.Equal("Bob", std.Login); 
             Assert.Equal("Bob25", std.Password); 
             Assert.Equal(std.GetType(), controller.GetType());
-            
+            using var context = new BankDbContext();
+            context.Remove(controller);
+            context.SaveChanges();
+
         }
 
         [Fact]
         public void TryGetUserFromDb()
         {
+            var user = Autorizer.CreateAccount("Bob", "Bob25");
             var controller = Autorizer.TryGetUser("Bob", "Bob25");
 
 
             Assert.Equal("Bob", controller.Login);
             Assert.Equal("Bob25", controller.Password);
+            using var context = new BankDbContext();
+            context.Remove(user);
+            context.SaveChanges();
         }
     }
 }
