@@ -28,7 +28,15 @@ namespace BankProject.States
                     Console.WriteLine("Input count");
                     if (Int32.TryParse(Console.ReadLine(), out var count) && BaseCard.IsUserOwner(_context.User, fromCardNumber))
                     {
-                        BaseCard.GetCardByNumber(fromCardNumber).CardToCard(BaseCard.GetCardByNumber(toCardNumber), count);
+                        if (BaseCard.IsCardValid(toCardNumber) && BaseCard.IsCardValid(fromCardNumber))
+                        {
+                            BaseCard.GetCardByNumber(fromCardNumber)
+                                .CardToCard(BaseCard.GetCardByNumber(toCardNumber), count);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"\nOne of input card in not valid\n");
+                        }
                     }
 
                     ShowMenu();
